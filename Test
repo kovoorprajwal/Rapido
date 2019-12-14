@@ -1,0 +1,160 @@
+package rapido;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Test {
+	static Map<String, Integer> lengaburuForceMax;// = new HashMap<String, Integer>();
+	static Map<String, Integer> falicorniaForceMax; // = new HashMap<String,Integer> ();
+	static Map<String, Integer> lengaburuForceOutput = new HashMap<String, Integer>();
+	static Map<String, Integer> falicorniaForceOutput = new HashMap<String, Integer>();
+	static {
+		Map<String, Integer> aMap = new HashMap<String, Integer>();
+		aMap.put("horses", 100);
+		aMap.put("elephants", 50);
+		aMap.put("armouredTanks", 10);
+		aMap.put("slingGun", 5);
+		lengaburuForceMax = Collections.unmodifiableMap(aMap);
+		Map<String, Integer> bMap = new HashMap<String, Integer>();
+		bMap.put("horses", 300);
+		bMap.put("elephants", 20);
+		bMap.put("armouredTanks", 40);
+		bMap.put("slingGun", 20);
+		falicorniaForceMax = Collections.unmodifiableMap(bMap);
+	}
+
+	public static void increment(Map<String, Integer> map, String key, Integer value) {
+		map.merge(key, value, Integer::sum);
+
+	}
+
+	public static void chooseWin(Map<String, Integer> falicorniaInput) {
+		Map<String, Integer> lengaburuOutput = new HashMap<String, Integer>();
+		lengaburuOutput.put("horses", 0);
+		lengaburuOutput.put("elephants", 0);
+		lengaburuOutput.put("armouredTanks", 0);
+		lengaburuOutput.put("slingGun", 0);
+		boolean win = true;
+		if (falicorniaInput.get("slingGun") <= 2 * (lengaburuForceMax.get("slingGun")-lengaburuOutput.get("slingGun"))) {
+			increment(lengaburuOutput, "slingGun", (falicorniaInput.get("slingGun") + 1) / 2);
+			//lengaburuOutput.put("slingGun", (falicorniaInput.get("slingGun") + 1) / 2);
+		} else {
+			lengaburuOutput.put("slingGun", lengaburuForceMax.get("slingGun"));
+			increment(lengaburuOutput, "armouredTanks",
+					((falicorniaInput.get("slingGun")+lengaburuOutput.get("slingGun") + 1) / 2 - (lengaburuForceMax.get("slingGun"))) * 2);
+		}
+
+		if (falicorniaInput.get("armouredTanks") <= 2 * (lengaburuForceMax.get("armouredTanks")-lengaburuOutput.get("armouredTanks"))) {
+			increment(lengaburuOutput, "armouredTanks", (falicorniaInput.get("armouredTanks") + 1) / 2);
+			//lengaburuOutput.put("armouredTanks", (falicorniaInput.get("armouredTanks") + 1) / 2);
+		} else {
+			lengaburuOutput.put("armouredTanks", lengaburuForceMax.get("armouredTanks"));
+			increment(lengaburuOutput, "elephants",
+					((falicorniaInput.get("armouredTanks") +lengaburuOutput.get("armouredTanks")+ 1) / 2 - (lengaburuForceMax.get("armouredTanks")) )
+							* 2);
+		}
+
+		if (falicorniaInput.get("elephants") <= 2 * (lengaburuForceMax.get("elephants")- lengaburuOutput.get("elephants"))) {
+			increment(lengaburuOutput, "elephants", (falicorniaInput.get("elephants") + 1) / 2);
+			//lengaburuOutput.put("elephants", (falicorniaInput.get("elephants") + 1) / 2);
+		} else {
+			lengaburuOutput.put("elephants", lengaburuForceMax.get("elephants"));
+			increment(lengaburuOutput, "horses",((
+					falicorniaInput.get("elephants")+ 1
+					) / 2 - lengaburuForceMax.get("elephants")
+					
+					
+					)*2
+					);
+		}
+
+		if (falicorniaInput.get("horses") <= 2 * (lengaburuForceMax.get("horses") - lengaburuOutput.get("horses"))) {
+			increment(lengaburuOutput, "horses", (falicorniaInput.get("horses") + 1) / 2);
+			//lengaburuOutput.put("horses", (falicorniaInput.get("horses") + 1) / 2);
+
+		}
+
+		else {
+			lengaburuOutput.put("horses", lengaburuForceMax.get("horses"));
+
+			if ((((falicorniaInput.get("horses") + 1) / 2) - lengaburuOutput.get("horses") + 1)
+					/ 2 > lengaburuForceMax.get("elephants") - lengaburuOutput.get("elephants")
+					&& lengaburuForceMax.get("elephants") - lengaburuOutput.get("elephants") >= 0) {
+
+				increment(lengaburuOutput, "elephants",
+						lengaburuForceMax.get("elephants") - lengaburuOutput.get("elephants"));
+
+				if ((((falicorniaInput.get("elephants") + 1) / 2) - lengaburuForceOutput.get("elephants") + 1)
+						/ 2 > lengaburuForceMax.get("armouredTanks") - lengaburuOutput.get("armouredTanks")
+						&& lengaburuForceMax.get("armouredTanks") - lengaburuOutput.get("armouredTanks") >= 0) {
+					increment(lengaburuOutput, "armouredTanks",
+							lengaburuForceMax.get("armouredTanks") - lengaburuOutput.get("armouredTanks"));
+
+					if ((((falicorniaInput.get("armouredTanks") + 1) / 2) - lengaburuForceOutput.get("armouredTanks")
+							+ 1) / 2 > lengaburuForceMax.get("slingGun") - lengaburuOutput.get("slingGun")
+							&& lengaburuForceMax.get("slingGun") - lengaburuOutput.get("slingGun") >= 0) {
+						increment(lengaburuOutput, "slingGun",
+								lengaburuForceMax.get("slingGun") - lengaburuOutput.get("slingGun"));
+						win = false;
+					}
+
+					else if ((((falicorniaInput.get("armouredTanks") + 1) / 2)
+							- lengaburuForceOutput.get("armouredTanks") + 1)
+							/ 2 <= lengaburuForceMax.get("slingGun") - lengaburuOutput.get("slingGun")
+							&& lengaburuForceMax.get("slingGun") - lengaburuOutput.get("slingGun") >= 0) {
+						increment(lengaburuOutput, "slingGun",
+								(lengaburuForceMax.get("slingGun") - lengaburuOutput.get("slingGun") + 1) / 2);
+						win = true;
+					}
+
+					else
+						win = false;
+
+				}
+
+				else if ((((falicorniaInput.get("elephants") + 1) / 2) - lengaburuForceOutput.get("elephants") + 1)
+						/ 2 <= lengaburuForceMax.get("armouredTanks") - lengaburuOutput.get("armouredTanks")
+						&& (lengaburuForceMax.get("armouredTanks") - lengaburuOutput.get("armouredTanks") >= 0)) {
+					increment(lengaburuOutput, "armouredTanks",
+							(lengaburuForceMax.get("elephants") - lengaburuOutput.get("elephants") + 1) / 2);
+					win = true;
+				}
+
+				else
+					win = false;
+
+			}
+
+			else if ((((falicorniaInput.get("horses") + 1) / 2) - lengaburuOutput.get("horses") + 1)
+					/ 2 <= lengaburuForceMax.get("elephants") - lengaburuOutput.get("elephants")
+					&& lengaburuForceMax.get("elephants") - lengaburuOutput.get("elephants") >= 0) {
+				increment(lengaburuOutput, "elephants",
+						(lengaburuForceMax.get("horses")  + 1) / 2);
+				win = true;
+			}
+
+			else
+				win = false;
+		}
+
+		System.out.println(win);
+		System.out.println(lengaburuOutput.toString());
+
+	}
+
+	public static void main(String args[]) {
+		Map<String, Integer> falicorniaInput = new HashMap<String, Integer>();
+		falicorniaInput.put("horses", 100);
+		falicorniaInput.put("elephants", 101);
+		falicorniaInput.put("armouredTanks", 20);
+		falicorniaInput.put("slingGun", 5);
+		//chooseWin(falicorniaInput);
+		falicorniaInput.put("horses", 150);
+		falicorniaInput.put("elephants", 96);
+		falicorniaInput.put("armouredTanks", 26);
+		falicorniaInput.put("slingGun", 8);
+		chooseWin(falicorniaInput);
+	}
+
+}
